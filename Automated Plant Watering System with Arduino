@@ -1,0 +1,37 @@
+int moisturePin = A0;
+int threshold = 800; // Threshold for dry soil
+int pumpPin = 7; // Assume a water pump is connected to pin 7
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(pumpPin, OUTPUT);
+  digitalWrite(pumpPin, LOW); // Ensure the pump is off at the start
+  while (!Serial);
+  delay(2000);
+}
+
+void loop() {
+  int averageMoisture = get_average_moisture();
+  Serial.println(averageMoisture);
+ 
+  if (averageMoisture < threshold) {
+    // Soil is dry, turn on the pump
+    digitalWrite(pumpPin, HIGH);
+    Serial.println("Soil is dry, turning on the pump.");
+  } else {
+    // Soil is wet, turn off the pump
+    digitalWrite(pumpPin, LOW);
+    Serial.println("Soil is wet, pump is off.");
+  }
+ 
+  delay(5000); // Delay between readings
+}
+
+int get_average_moisture() {
+  int tempValue = 0;
+  for (int a = 0; a < 10; a++) {
+    tempValue += analogRead(moisturePin);
+    delay(100);
+  }
+  return tempValue / 10;
+}
